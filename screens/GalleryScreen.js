@@ -3,7 +3,6 @@ import { Image, StyleSheet, View, Text, ScrollView, Dimensions } from 'react-nat
 import { Badge } from 'react-native-elements'
 
 var width = Dimensions.get('window').width; //full width
-var height = Dimensions.get('window').height; //full height
 
 function GalleryScreen(props) {
 
