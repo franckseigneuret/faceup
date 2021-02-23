@@ -11,6 +11,7 @@ import { Camera } from 'expo-camera';
 
 function SnapScreen(props) {
   const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back); // caméra du smartphone : front / dos
 
   useEffect(() => {
 
@@ -25,11 +26,18 @@ function SnapScreen(props) {
     return (
       <>
         <View style={styles.container}>
-          <Camera style={{ flex: 1 }}></Camera>
+          <Camera style={{ flex: 1 }} type={type}></Camera>
         </View>
 
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.touch}>
+          <TouchableOpacity style={styles.touch}
+            onPress={() => {
+              setType(
+                type == Camera.Constants.Type.back
+                  ? Camera.Constants.Type.front
+                  : Camera.Constants.Type.back
+              );
+            }}>
             <MaterialCommunityIcons name="camera-retake" size={20} color="#FFF">
             </MaterialCommunityIcons>
             <Text style={styles.buttonText}>Flip</Text>
