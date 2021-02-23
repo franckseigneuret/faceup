@@ -56,7 +56,7 @@ function SnapScreen(props) {
                   : Camera.Constants.FlashMode.off
               );
             }}>
-            <FontAwesome name="flash" size={20} color="#FFF" />
+            <FontAwesome name="flash" size={20} color={flashMode === Camera.Constants.FlashMode.off ? '#FFF': '#fcac00'} />
             <Text style={styles.buttonText}>Flash</Text>
           </TouchableOpacity>
         </View>
@@ -68,7 +68,10 @@ function SnapScreen(props) {
                 base64: false,
                 exif: true
                })
-               console.log(photo)
+               if(photo) {
+                 console.log(photo)
+                  setFlashMode(Camera.Constants.FlashMode.off)
+               }
             }
           }}
         >
