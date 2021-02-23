@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import * as NatEl from 'react-native-elements'
+import { Overlay } from 'react-native-elements'
 
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 
@@ -12,6 +12,7 @@ function SnapScreen(props) {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back); // caméra du smartphone : front / dos
   const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off); // caméra du smartphone : front / dos
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
 
@@ -23,6 +24,24 @@ function SnapScreen(props) {
   }, []);
 
   let cameraRef = useRef(null);
+
+  const takePicture = async () => {
+
+    setVisible(true)
+
+    if (cameraRef) {
+      let photo = await cameraRef.takePictureAsync({
+        quality: 0.1,
+        base64: false,
+        exif: true
+      })
+
+      if (photo) {
+        setVisible(false)
+        setFlashMode(Camera.Constants.FlashMode.off)
+      }
+    }
+  }
 
   if (hasPermission) {
     return (
@@ -56,28 +75,19 @@ function SnapScreen(props) {
                   : Camera.Constants.FlashMode.off
               );
             }}>
-            <FontAwesome name="flash" size={20} color={flashMode === Camera.Constants.FlashMode.off ? '#FFF': '#fcac00'} />
+            <FontAwesome name="flash" size={20} color={flashMode === Camera.Constants.FlashMode.off ? '#FFF' : '#fcac00'} />
             <Text style={styles.buttonText}>Flash</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.captureBtn}
-          onPress={async () => {
-            if (cameraRef) {
-              let photo = await cameraRef.takePictureAsync({
-                quality : 0.1,
-                base64: false,
-                exif: true
-               })
-               if(photo) {
-                 console.log(photo)
-                  setFlashMode(Camera.Constants.FlashMode.off)
-               }
-            }
-          }}
-        >
+        <TouchableOpacity
+          style={styles.captureBtn}
+          onPress={() => takePicture()}>
           <FontAwesome name="save" size={24} color="#FFF" />
           <Text style={styles.save}>Snap</Text>
         </TouchableOpacity>
+        <Overlay isVisible={visible}>
+          <Text>Loading...</Text>
+        </Overlay>
       </>
     )
   }
@@ -100,13 +110,7 @@ const styles = StyleSheet.create({
   touch: {
     alignSelf: 'flex-end',
     alignItems: 'center',
-    // borderColor: 'red',
-    // borderStyle: 'solid',
-    // borderWidth: 2,
     padding: 15,
-  },
-  button: {
-    backgroundColor: '#149588'
   },
   buttonText: {
     color: '#FFF',
