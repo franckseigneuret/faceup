@@ -12,6 +12,7 @@ import { Camera } from 'expo-camera';
 function SnapScreen(props) {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back); // caméra du smartphone : front / dos
+  const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off); // caméra du smartphone : front / dos
 
   useEffect(() => {
 
@@ -26,7 +27,7 @@ function SnapScreen(props) {
     return (
       <>
         <View style={styles.container}>
-          <Camera style={{ flex: 1 }} type={type}></Camera>
+          <Camera style={{ flex: 1 }} type={type} flashMode={flashMode}></Camera>
         </View>
 
         <View style={styles.buttonsContainer}>
@@ -42,7 +43,14 @@ function SnapScreen(props) {
             </MaterialCommunityIcons>
             <Text style={styles.buttonText}>Flip</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.touch}>
+          <TouchableOpacity style={styles.touch}
+            onPress={() => {
+              setFlashMode(
+                flashMode === Camera.Constants.FlashMode.off
+                  ? Camera.Constants.FlashMode.torch
+                  : Camera.Constants.FlashMode.off
+              );
+            }}>
             <FontAwesome name="flash" size={20} color="#FFF" />
             <Text style={styles.buttonText}>Flash</Text>
           </TouchableOpacity>
