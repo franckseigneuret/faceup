@@ -1,24 +1,59 @@
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['Warning: ...']);
 
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import HomeScreen from './screens/HomeScreen';
+import GalleryScreen from './screens/GalleryScreen';
+import SnapScreen from './screens/SnapScreen';
+
+import { MaterialIcons } from '@expo/vector-icons'; 
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const BottomNavigator = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color }) => {
+          let iconName;
+
+          if (route.name == 'Gallery') {
+            iconName = 'photo';
+          } else if (route.name == 'Snap') {
+            iconName = 'photo-camera';
+          }
+  
+          return <MaterialIcons name={iconName} size={24} color="black" />
+        },
+        })}
+      tabBarOptions={{
+        activeTintColor: '#eb4d4b',
+        inactiveTintColor: '#FFFFFF',
+        style: {
+          backgroundColor: '#130f40',
+        }
+      }}
+    >
+      <Tab.Screen name="Gallery" component={GalleryScreen} />
+      <Tab.Screen name="Snap" component={SnapScreen} />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
+        </Stack.Navigator>
+      </NavigationContainer>
+  );
+}
+
