@@ -11,7 +11,7 @@ import HomeScreen from './screens/HomeScreen';
 import GalleryScreen from './screens/GalleryScreen';
 import SnapScreen from './screens/SnapScreen';
 
-import { MaterialIcons } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,15 +28,15 @@ const BottomNavigator = () => {
           } else if (route.name == 'Snap') {
             iconName = 'photo-camera';
           }
-  
-          return <MaterialIcons name={iconName} size={24} color="black" />
+
+          return <MaterialIcons name={iconName} size={24} color={color} />
         },
-        })}
+      })}
       tabBarOptions={{
-        activeTintColor: '#eb4d4b',
+        activeTintColor: '#009788',
         inactiveTintColor: '#FFFFFF',
         style: {
-          backgroundColor: '#130f40',
+          backgroundColor: '#111224',
         }
       }}
     >
@@ -49,11 +49,11 @@ const BottomNavigator = () => {
 export default function App() {
   return (
     <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
