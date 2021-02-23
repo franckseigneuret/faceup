@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import * as NatEl from 'react-native-elements'
 
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 
 import { Camera } from 'expo-camera';
@@ -23,11 +22,17 @@ function SnapScreen(props) {
 
   }, []);
 
+  let cameraRef = useRef(null);
+
   if (hasPermission) {
     return (
       <>
         <View style={styles.container}>
-          <Camera style={{ flex: 1 }} type={type} flashMode={flashMode}></Camera>
+          <Camera
+            style={{ flex: 1 }}
+            type={type}
+            flashMode={flashMode}
+            ref={ref => (cameraRef = ref)}></Camera>
         </View>
 
         <View style={styles.buttonsContainer}>
@@ -55,11 +60,26 @@ function SnapScreen(props) {
             <Text style={styles.buttonText}>Flash</Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity style={styles.captureBtn}
+          onPress={async () => {
+            if (cameraRef) {
+              let photo = await cameraRef.takePictureAsync({
+                quality : 0.1,
+                base64: false,
+                exif: true
+               })
+               console.log(photo)
+            }
+          }}
+        >
+          <FontAwesome name="save" size={24} color="#FFF" />
+          <Text style={styles.save}>Snap</Text>
+        </TouchableOpacity>
       </>
     )
   }
   else {
-    return <View style={{ flex: 1 }} />;
+    return <View style={{ flex: 1 }} />
   }
 }
 
@@ -69,7 +89,7 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 40,
     flexDirection: 'row',
     // alignItems: 'center',
     // justifyContent: 'center',
@@ -88,7 +108,21 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFF',
     fontSize: 20,
-  }
+  },
+  captureBtn: {
+    backgroundColor: '#149588',
+    color: '#FFF',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    height: 40,
+    padding: 5,
+    alignItems: 'center',
+  },
+  save: {
+    color: '#FFF',
+    marginLeft: 20,
+    fontSize: 20,
+  },
 });
 
 
