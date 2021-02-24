@@ -77,6 +77,18 @@ function SnapScreen(props) {
       if (video) {
         console.log(video)
 
+        setIsRecording(false)
+
+        const data = new FormData();
+        data.append('movie', {
+          uri: video.uri,
+          type: 'video/mp4',
+          name: 'movie.mp4',
+        })
+        const postMovie = await fetch('http://172.17.1.161:3000/upload_video', {
+          method: 'post',
+          body: data,
+        })
 
       }
     }
