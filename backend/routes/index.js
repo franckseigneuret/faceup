@@ -42,26 +42,27 @@ router.post('/upload_video', async function (req, res, next) {
 
   const resultCopy = await req.files.movie.mv(moviePath)
 
-  // if (!resultCopy) {
+  if (!resultCopy) {
 
-  //   cloudinary.config({
-  //     cloud_name: 'dicdkyp3a',
-  //     api_key: '223251262178638',
-  //     api_secret: '-Fk3YqHylNGDPYp6woNf3SbadtY'
-  //   })
+    cloudinary.config({
+      cloud_name: 'dicdkyp3a',
+      api_key: '223251262178638',
+      api_secret: '-Fk3YqHylNGDPYp6woNf3SbadtY'
+    })
 
-  //   const resultCloudinary = await cloudinary.uploader.upload(moviePath)
+    const resultCloudinary = await cloudinary.uploader.upload(moviePath, { resource_type: "video" })
 
-  //   if (resultCloudinary.url && resultCloudinary.url.length > 0) {
-  //     fs.unlinkSync(moviePath)
-  //     res.json({ result: true, resultCloudinary })
-  //   } else {
-  //     res.json({ result: false, error: 'pb sur cloudinary' })
-  //   }
+    console.log('resultCloudinary== ', resultCloudinary)
+    if (resultCloudinary.url && resultCloudinary.url.length > 0) {
+      fs.unlinkSync(moviePath)
+      res.json({ result: true, resultCloudinary })
+    } else {
+      res.json({ result: false, error: 'pb sur cloudinary' })
+    }
 
-  // } else {
-  //   res.json({ result: false, error: resultCopy })
-  // }
+  } else {
+    res.json({ result: false, error: resultCopy })
+  }
 })
 
 module.exports = router;
