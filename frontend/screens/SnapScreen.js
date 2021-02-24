@@ -13,6 +13,7 @@ function SnapScreen(props) {
   const [type, setType] = useState(Camera.Constants.Type.back); // caméra du smartphone : front / dos
   const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off); // caméra du smartphone : front / dos
   const [visible, setVisible] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
 
@@ -33,7 +34,7 @@ function SnapScreen(props) {
       let photo = await cameraRef.takePictureAsync({
         quality: 0.1,
         base64: false,
-        exif: true
+        exif: true,
       })
 
       if (photo) {
@@ -63,6 +64,23 @@ function SnapScreen(props) {
     }
   }
 
+  const takeVideo = async () => {
+
+    setIsRecording(!isRecording)
+
+    if (cameraRef) {
+      let video = await cameraRef.recordAsync({
+        quality: '480p',
+        maxDuration: 3,
+      })
+
+      if (video) {
+        console.log(video)
+
+
+      }
+    }
+  }
   if (hasPermission) {
     return (
       <>
@@ -71,7 +89,8 @@ function SnapScreen(props) {
             style={{ flex: 1 }}
             type={type}
             flashMode={flashMode}
-            ref={ref => (cameraRef = ref)}></Camera>
+            ref={ref => (cameraRef = ref)}
+          ></Camera>
         </View>
 
         <View style={styles.buttonsContainer}>
@@ -99,12 +118,27 @@ function SnapScreen(props) {
             <Text style={styles.buttonText}>Flash</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.captureBtn}
-          onPress={() => takePicture()}>
-          <FontAwesome name="save" size={24} color="#FFF" />
-          <Text style={styles.save}>Snap</Text>
-        </TouchableOpacity>
+
+        <View style={styles.cameraVideo}>
+          <TouchableOpacity
+            style={styles.captureBtn}
+            onPress={() => takePicture()}>
+            <FontAwesome name="save" size={24} color="#FFF" />
+            <Text style={styles.save}>Snap</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.captureBtn}
+            onPress={() => takeVideo()}>
+            {
+              isRecording ?
+              <FontAwesome name="square" size={15} color="#F00" style={styles.square} />
+              :
+              <FontAwesome name="circle" size={24} color="#F00" />
+            }
+            <Text style={styles.save}>Video</Text>
+          </TouchableOpacity>
+        </View>
         <Overlay isVisible={visible}>
           <Text>Loading...</Text>
         </Overlay>
@@ -136,6 +170,11 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 20,
   },
+  cameraVideo: {
+    backgroundColor: '#149588',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
   captureBtn: {
     backgroundColor: '#149588',
     color: '#FFF',
@@ -150,6 +189,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     fontSize: 20,
   },
+  square: {
+    borderColor: '#F00',
+    borderWidth: 3,
+    borderRadius: 14,
+    padding: 5,
+  }
 });
 
 
