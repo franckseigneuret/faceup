@@ -51,6 +51,7 @@ function SnapScreen(props) {
         })
 
         const upload = await postPhoto.json()
+        console.log(upload)
         if (upload.result) {
           setVisible(false)
         }
