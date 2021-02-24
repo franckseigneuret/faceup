@@ -2,10 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { Image, StyleSheet, View, Text, ScrollView, Dimensions } from 'react-native';
 import { Badge } from 'react-native-elements'
 
+import { connect } from 'react-redux'
+
 var width = Dimensions.get('window').width; //full width
 
 function GalleryScreen(props) {
 
+  const items = props.photosUrl.map((item, i) => {
+
+    return (
+      <View style={styles.item} key={i}>
+        <Image style={styles.img}
+          source={{ uri: item }}
+        />
+        <View style={{ textAlign: 'center' }}>
+          <Badge value="Homme" status="success" />
+          <Badge value="30 ans" status="success" />
+          <Badge value="Barbe" status="success" />
+          <Badge value="joyeux" status="success" />
+          <Badge value="cheveux gris" status="success" />
+        </View>
+      </View>
+    )
+  })
 
   return (
     <View style={styles.container}>
@@ -14,44 +33,8 @@ function GalleryScreen(props) {
           John's Gallery
         </Text>
 
-        <View style={styles.item}>
-          <Image style={styles.img}
-            source={require('../assets/picture-1.jpg')}
-          />
-          <View style={{ textAlign: 'center' }}>
-            <Badge value="Homme" status="success" />
-            <Badge value="70 ans" status="success" />
-            <Badge value="Barbe" status="success" />
-            <Badge value="joyeux" status="success" />
-            <Badge value="cheveux gris" status="success" />
-          </View>
-        </View>
+        {items}
 
-        <View style={styles.item}>
-          <Image style={styles.img}
-            source={require('../assets/picture-2.jpg')}
-          />
-          <View style={{ textAlign: 'center' }}>
-            <Badge value="Homme" status="success" />
-            <Badge value="70 ans" status="success" />
-            <Badge value="Barbe" status="success" />
-            <Badge value="joyeux" status="success" />
-            <Badge value="cheveux gris" status="success" />
-          </View>
-        </View>
-
-        <View style={styles.item}>
-          <Image style={styles.img}
-            source={require('../assets/picture-3.jpg')}
-          />
-          <View style={{ textAlign: 'center' }}>
-            <Badge value="Homme" status="success" />
-            <Badge value="70 ans" status="success" />
-            <Badge value="Barbe" status="success" />
-            <Badge value="joyeux" status="success" />
-            <Badge value="cheveux gris" status="success" />
-          </View>
-        </View>
       </ScrollView>
     </View>
 
@@ -95,4 +78,13 @@ const styles = StyleSheet.create({
 
 
 
-export default GalleryScreen;
+function mapStateToProps(state) {
+  return {
+    photosUrl: state.photosUrl,
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(GalleryScreen)

@@ -6,7 +6,7 @@ import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 
 import { Camera } from 'expo-camera';
 
-
+import { connect } from 'react-redux'
 
 function SnapScreen(props) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -51,9 +51,12 @@ function SnapScreen(props) {
         })
 
         const upload = await postPhoto.json()
-        console.log(upload)
         if (upload.result) {
           setVisible(false)
+        }
+        if (upload.resultCloudinary && upload.resultCloudinary.url.length > 0) {
+          console.log('ok')
+          props.savePhoto(upload.resultCloudinary.url)
         }
         setFlashMode(Camera.Constants.FlashMode.off)
       }
@@ -151,4 +154,15 @@ const styles = StyleSheet.create({
 
 
 
-export default SnapScreen;
+function mapDispatchToProps(dispatch) {
+  return {
+    savePhoto: function (photoUrl) {
+      dispatch({ type: 'savePhoto', photoUrl: photoUrl })
+    },
+  }
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(SnapScreen)

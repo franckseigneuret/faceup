@@ -13,6 +13,11 @@ import SnapScreen from './screens/SnapScreen';
 
 import { MaterialIcons } from '@expo/vector-icons';
 
+import { Provider } from 'react-redux'
+import { createStore, combineReducers } from 'redux'
+import photosUrl from './reducers/photo'
+const store = createStore(combineReducers({ photosUrl }))
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -48,12 +53,14 @@ const BottomNavigator = () => {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="BottomNavigator" component={BottomNavigator} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 

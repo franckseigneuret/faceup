@@ -10,27 +10,28 @@ router.get('/', function (req, res, next) {
 
 var uniqid = require('uniqid');
 
-router.get('/upload', async function (req, res, next) {
-  console.log('-', req.query)
-})
 router.post('/upload', async function (req, res, next) {
   const imagePath = './tmp/' + uniqid() + '.jpg'
 
   const resultCopy = await req.files.avatar.mv(imagePath)
 
   if (!resultCopy) {
+
     cloudinary.config({
       cloud_name: 'dicdkyp3a',
       api_key: '223251262178638',
       api_secret: '-Fk3YqHylNGDPYp6woNf3SbadtY'
-    });
-    const resultCloudinary = await cloudinary.uploader.upload(imagePath);
-    if(resultCloudinary.url && resultCloudinary.url.length > 0) {
-      fs.unlinkSync(imagePath);
+    })
+
+    const resultCloudinary = await cloudinary.uploader.upload(imagePath)
+
+    if (resultCloudinary.url && resultCloudinary.url.length > 0) {
+      fs.unlinkSync(imagePath)
       res.json({ result: true, resultCloudinary })
     } else {
       res.json({ result: false, error: 'pb sur cloudinary' })
     }
+
   } else {
     res.json({ result: false, error: resultCopy })
   }
