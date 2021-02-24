@@ -37,7 +37,23 @@ function SnapScreen(props) {
       })
 
       if (photo) {
-        setVisible(false)
+        // console.log(photo)
+
+        const data = new FormData();
+        data.append('avatar', {
+          uri: photo.uri,
+          type: 'image/jpeg',
+          name: 'user_avatar.jpg',
+        })
+        const postPhoto = await fetch('http://172.17.1.161:3000/upload', {
+          method: 'post',
+          body: data,
+        })
+
+        const upload = await postPhoto.json()
+        if (upload.result) {
+          setVisible(false)
+        }
         setFlashMode(Camera.Constants.FlashMode.off)
       }
     }
