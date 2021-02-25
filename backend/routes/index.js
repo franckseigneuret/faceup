@@ -38,9 +38,12 @@ router.post('/upload', async function (req, res, next) {
 })
 
 router.post('/upload_video', async function (req, res, next) {
-  const moviePath = './tmp/' + uniqid() + '.mp4'
+  const moviePath = './tmp/' + uniqid() + '.mov'
+  const thumbPath = './tmp/' + uniqid() + '.jpg'
+  // console.log(req.files)
 
   const resultCopy = await req.files.movie.mv(moviePath)
+  const resultThumbCopy = await req.files.thumb.mv(thumbPath)
 
   if (!resultCopy) {
 
@@ -50,12 +53,12 @@ router.post('/upload_video', async function (req, res, next) {
       api_secret: '-Fk3YqHylNGDPYp6woNf3SbadtY'
     })
 
-    const resultCloudinary = await cloudinary.uploader.upload(moviePath, { resource_type: "video" })
+    const resultCloudinaryVideo = await cloudinary.uploader.upload(moviePath, { resource_type: "video" })
+    const resultThumbCloudinary = await cloudinary.uploader.upload(thumbPath)
 
-    console.log('resultCloudinary== ', resultCloudinary)
-    if (resultCloudinary.url && resultCloudinary.url.length > 0) {
+    if (resultCloudinaryVideo.url && resultCloudinaryVideo.url.length > 0) {
       fs.unlinkSync(moviePath)
-      res.json({ result: true, resultCloudinary })
+      res.json({ result: true, resultCloudinaryVideo })
     } else {
       res.json({ result: false, error: 'pb sur cloudinary' })
     }

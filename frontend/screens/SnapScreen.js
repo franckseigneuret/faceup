@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 import { Overlay } from 'react-native-elements'
 
 import { MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
@@ -14,6 +15,9 @@ function SnapScreen(props) {
   const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off); // caméra du smartphone : front / dos
   const [visible, setVisible] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [thumbnail, setThumbnail] = useState(null);
+
+  let cameraRef = useRef(null);
 
   useEffect(() => {
 
@@ -23,8 +27,6 @@ function SnapScreen(props) {
     })();
 
   }, []);
-
-  let cameraRef = useRef(null);
 
   const takePicture = async () => {
 
@@ -56,7 +58,6 @@ function SnapScreen(props) {
           setVisible(false)
         }
         if (upload.resultCloudinary && upload.resultCloudinary.url.length > 0) {
-          console.log('ok')
           props.savePhoto(upload.resultCloudinary.url)
         }
         setFlashMode(Camera.Constants.FlashMode.off)
@@ -64,31 +65,57 @@ function SnapScreen(props) {
     }
   }
 
-  const takeVideo = async () => {
+  const generateThumbnail = async (cloudinaryMovieURL) => {
+    console.log('generate Thumb');
+    try {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(cloudinaryMovieURL, { time: 15000 })
+      console.log('thumb', uri);
+      setThumbnail(uri);
+      return uri
+    } catch (e) {
+      console.warn(e);
+    }
+  }
 
+  const takeVideo = async () => {
+    setThumbnail(null)
     setIsRecording(!isRecording)
 
     if (cameraRef) {
       let video = await cameraRef.recordAsync({
         quality: '480p',
-        maxDuration: 3,
+        maxDuration: 1,
       })
 
       if (video) {
-        console.log(video)
+        const thumbnailURL = await generateThumbnail(video.uri)
 
         setIsRecording(false)
 
         const data = new FormData();
         data.append('movie', {
           uri: video.uri,
-          type: 'video/mp4',
-          name: 'movie.mp4',
+          type: 'video/quicktime',
+          name: 'movie.mov',
+        })
+        data.append('thumb', {
+          uri: thumbnailURL,
+          type: 'image/jpeg',
+          name: 'thumb.jpg',
         })
         const postMovie = await fetch('http://172.17.1.161:3000/upload_video', {
           method: 'post',
           body: data,
         })
+        const upload = await postMovie.json()
+        // if (upload.result) {
+        //   // console.log('ok video', upload.resultCloudinary)
+        //   if (upload.resultCloudinary && upload.resultCloudinary.url) {
+        //     generateThumbnail(upload.resultCloudinary.url)
+        //   }
+        // }
+
+
 
       }
     }
@@ -97,6 +124,7 @@ function SnapScreen(props) {
     return (
       <>
         <View style={styles.container}>
+          {thumbnail && <Image source={{ uri: thumbnail }} style={styles.thumbnail} />}
           <Camera
             style={{ flex: 1 }}
             type={type}
@@ -144,9 +172,9 @@ function SnapScreen(props) {
             onPress={() => takeVideo()}>
             {
               isRecording ?
-              <FontAwesome name="square" size={15} color="#F00" style={styles.square} />
-              :
-              <FontAwesome name="circle" size={24} color="#F00" />
+                <FontAwesome name="square" size={15} color="#F00" style={styles.square} />
+                :
+                <FontAwesome name="circle" size={24} color="#F00" />
             }
             <Text style={styles.save}>Video</Text>
           </TouchableOpacity>
@@ -165,6 +193,7 @@ function SnapScreen(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // position: 'relative',
   },
   buttonsContainer: {
     position: 'absolute',
@@ -206,7 +235,17 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderRadius: 14,
     padding: 5,
-  }
+  },
+  thumbnail: {
+    position: 'absolute',
+    top: 50,
+    right: 30,
+    width: 50,
+    height: 80,
+    zIndex: 10000,
+    borderColor: '#F00',
+    borderWidth: 3,
+  },
 });
 
 
